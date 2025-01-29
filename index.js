@@ -7,7 +7,6 @@ class Game {
       width: 800,
       height: 600,
       pixelArt: true,
-      audio: {noAudio: true},
       physics: {
         default: "arcade",
         arcade: {
@@ -26,6 +25,7 @@ class MainScene extends Phaser.Scene {
   }
   preload() {
     this.load.image("background", "assets/scifi_bg.jpg")
+    this.load.audio("bounce", "assets/bounce.ogg");
     this.load.image("sky", "assets/sky.png");
     this.load.image("ground", "assets/platform.png");
     this.load.image("wall", "assets/platform.png")
@@ -62,7 +62,7 @@ class MainScene extends Phaser.Scene {
 
     this.player = this.physics.add.sprite(100, 450, "frog");
     this.player.setScale(4);
-    
+
 
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
@@ -130,7 +130,7 @@ class MainScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.walls, this.hitWall, null, this);
   }
 
-  updatePlayerAnims() {
+  updatePlayer() {
     if (this.player.body.touching.down) {
       this.player.anims.play("walk", true)
       this.falling = false
@@ -138,6 +138,7 @@ class MainScene extends Phaser.Scene {
       if (this.cursors.up.isDown || this.input.activePointer.isDown) {
         this.player.setVelocityY(-400)
         this.player.anims.play("jump", true);
+        this.sound.play("bounce");
       }
     } else {
       // in air
@@ -181,7 +182,7 @@ class MainScene extends Phaser.Scene {
       return;
     }
     this.moveObstacles(delta)
-    this.updatePlayerAnims()
+    this.updatePlayer()
   }
 
   hitWall(player, wall) {
