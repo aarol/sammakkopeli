@@ -162,6 +162,9 @@ class MainScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * @param {number} delta
+   */
   moveObstacles(delta) {
     this.stars.children.iterate((star) => {
       star.body.position.x -= delta * this.obstacleSpeedMultiplier
@@ -186,7 +189,9 @@ class MainScene extends Phaser.Scene {
     this.background.tilePositionX += 1
   }
 
-
+  /**
+   * @param {number} delta
+   */
   update(_, delta) {
     if (this.gameOver) {
       return;
@@ -196,16 +201,19 @@ class MainScene extends Phaser.Scene {
     this.player.update()
   }
 
-  hitWall(player, wall) {
+  hitWall(_player, _wall) {
     this.physics.pause()
     this.player.anims.stop()
 
-    player.setTint(0xff0000)
+    this.player.setTint(0xff0000)
 
     this.gameOver = true
   }
 
-  collectStar(player, star) {
+  /**
+   * @param {import("phaser").Physics.Arcade.Sprite} star
+   */
+  collectStar(_player, star) {
     star.disableBody(true, true)
 
     this.score += 10;
