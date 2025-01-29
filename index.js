@@ -11,7 +11,7 @@ class Game {
         default: "arcade",
         arcade: {
           gravity: { y: 450, x: 0 },
-          debug: false,
+          debug: true,
         },
       },
       scene: MainScene,
@@ -114,10 +114,17 @@ class MainScene extends Phaser.Scene {
     this.bombs = this.physics.add.group();
 
     //  The score
-    this.scoreText = this.add.text(16, 16, "score: 0", {
-      fontSize: "32px",
-      color: "#000",
-    });
+    {
+
+      this.scoreText = this.add.text(this.cameras.main.width / 2, 40, "score: 0", {
+        fontSize: "32px",
+        color: "#fff",
+        align: "center",
+        fontFamily: "system-ui"
+      }).setOrigin(0.5,0.5);
+    }
+
+    this.spaceKey = this.input.keyboard.addKey("SPACE");
 
     //  Collide the player and the stars with the platforms
     this.physics.add.collider(this.player, this.platforms);
@@ -132,10 +139,14 @@ class MainScene extends Phaser.Scene {
 
   updatePlayer() {
     if (this.player.body.touching.down) {
+      // contact with ground
       this.player.anims.play("walk", true)
       this.falling = false
 
-      if (this.cursors.up.isDown || this.input.activePointer.isDown) {
+      const shouldJump = this.cursors.up.isDown || this.spaceKey.isDown || this.input.activePointer.isDown;
+
+      if (shouldJump) {
+        // this.player.jump()
         this.player.setVelocityY(-400)
         this.player.anims.play("jump", true);
         this.sound.play("bounce");
@@ -143,7 +154,6 @@ class MainScene extends Phaser.Scene {
     } else {
       // in air
       if (this.player.body.velocity.y > 0 && !this.falling) {
-        // 🤓 uhmm.. actually we are falling
         this.player.anims.stop()
         this.player.play("fall", true);
         // set falling flag to not play animation repeatedly
@@ -183,6 +193,7 @@ class MainScene extends Phaser.Scene {
     }
     this.moveObstacles(delta)
     this.updatePlayer()
+    this.player.update()
   }
 
   hitWall(player, wall) {
